@@ -3,8 +3,16 @@
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.5.2"]
-                 [hiccup "1.0.5"]
-                 [ring-server "0.4.0"]]
+                 [mysql/mysql-connector-java "5.1.6"]
+                 [org.clojure/java.jdbc "0.6.1"]
+                 [korma/korma "0.4.3"]
+                 [selmer "1.10.7"]
+                 [buddy/buddy-auth "1.4.1"]
+                 [ring-server "0.4.0"]
+                 [log4j "1.2.15" :exclusions [javax.mail/mail
+                            javax.jms/jms
+                            com.sun.jdmk/jmxtools
+                            com.sun.jmx/jmxri]]]
   :plugins [[lein-ring "0.8.12"]]
   :ring {:handler movie-reviews-app.handler/app
          :init movie-reviews-app.handler/init
