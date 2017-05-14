@@ -1,14 +1,18 @@
 (ns movie-reviews-app.routes.auth
   (:require [compojure.core :refer :all]
             [selmer.parser :refer [render-file]]
-            [ring.util.response :refer [redirect]]
-            [movie-reviews-app.views.layout :as layout]))
+            [movie-reviews-app.models.db :as db]
+            [ring.util.response :refer [redirect]]))
 
 (defn login-get []
   (render-file "pages/login.html" {}))
 
 (defn login-post [{:keys [params session] request :request}]
-  (assoc (redirect "/"):session (assoc session :identity "")))
+  (let [user (first (db/get-user (:username params) (:password params)))]
+    (println (some? user))
+    (if (some? user)
+      (assoc (redirect "/"):session (assoc session :identity user))
+      (render-file "pages/login.html" {:error "Wrong username or password"}))))
 
 (defn logout
   [request]

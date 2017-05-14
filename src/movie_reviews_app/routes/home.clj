@@ -1,9 +1,10 @@
 (ns movie-reviews-app.routes.home
   (:require [compojure.core :refer :all]
-            [movie-reviews-app.views.layout :as layout]))
+            [selmer.parser :refer [render-file]]
+            [movie-reviews-app.models.db :as db]))
 
-(defn home []
-  (layout/common [:h1 "Hello World!"]))
+(defn home [{:keys [params session] request :request}]
+  (render-file "pages/home.html" {:movies (db/get-movies) :user (:identity session)}))
 
 (defroutes home-routes
-  (GET "/" [] (home)))
+  (GET "/" request (home request)))

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Welcome {{user.name}} {{user.surname}}</h1>
+
+{% ifequal user.role "admin" %}
+  <a href="/addmovie">Add new movie</a>
+{% endifequal %}
+
+<h1>This is home page</h1>
+<ul style="list-style-type:disc">
+  {% for movie in movies %}
+  <li><a href="/moviedetail/{{movie.id}}">{{movie.name}}({{movie.released}})</a></li>
+  {% endfor %}
+</ul>
+</body>
+</html>

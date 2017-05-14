@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>This is movie page</h1>
+<ul style="list-style-type:disc">
+  <li>{{movie.name}}</li>
+  <li>{{movie.released}}</li>
+  <li>{{movie.description}}</li>
+  <li>Rating: {{average}}</li>
+  {% ifequal rated "true" %}
+    Your rating: {{rating.rating}}<br>
+  {% endifequal %}
+  {% ifequal rated "false" %}
+    <form action="/ratemovie" method="post">
+      Rate this move(1-10):
+      <input type="number" min="1" step="10"/>
+      <input type="submit" value="Rate">
+    </form>
+  {% endifequal %}
+</ul>
+
+</body>
+</html>
