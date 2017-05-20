@@ -2,6 +2,7 @@
   (:require [compojure.core :refer :all]
             [selmer.parser :refer [render-file]]
             [buddy.auth :refer [authenticated? throw-unauthorized]]
+            [ring.util.response :refer [response redirect content-type]]
             [movie-reviews-app.models.db :as db]))
 
 (defn authenticated [session]
@@ -28,6 +29,7 @@
                 :average (averagerating (:id params))
                 :rating (first (db/find-rating-by-user-movie (:id params) (:username (:identity session))))
                 :rated (israted (:id params) (:username (:identity session)))
+                :comments (db/find-comment-by-movieid (:id params))
                 :authenticated (str (authenticated session))}))
 
 (defn addmovie-get [{:keys [params session] request :request}]
@@ -39,7 +41,22 @@
   (db/add-movie params)
   (render-file "pages/home.html" {:movies (db/get-movies) :user (:identity session)}))
 
+(defn addcomment [{:keys [params session] request :request}]
+  (db/add-comment params)
+  (redirect (str "/moviedetail/" (:movie params))))
+
+(defn editcomment [{:keys [params session] request :request}]
+  (db/update-comment params)
+  (redirect (str "/moviedetail/" (:movie params))))
+
+(defn deletecomment [{:keys [params session] request :request}]
+  (db/delete-comment (:id params))
+  (redirect (str "/moviedetail/" (:movie params))))
+
 (defroutes movie-routes
   (GET "/moviedetail/:id" request (showmovie request))
   (GET "/addmovie" request (addmovie-get request))
-  (POST "/addmovie" request (addmovie-post request)))
+  (POST "/addmovie" request (addmovie-post request))
+  (POST "/addcomment" request (addcomment request))
+  (POST "/editcomment" request (editcomment request))
+  (GET "/deletecomment/:movie&:id" request (deletecomment request)))

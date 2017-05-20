@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
 <body>
 <h1>This is movie page</h1>
 <ul style="list-style-type:disc">
@@ -18,6 +21,55 @@
     </form>
   {% endifequal %}
 </ul>
-
+<br>
+<h1>Comments</h1>
+  {% ifequal authenticated "true" %}
+    <form id="commentform" action="/addcomment" method="post">
+      <input type="hidden" value="{{movie.id}}" name="movie" />
+      <input type="hidden" value="{{user.username}}" name="user" />
+      Your comment:<br/>
+      <textarea name="text">Enter comment here...</textarea><br/>
+      <input type="submit" value="Comment"/>
+    </form>
+  {% endifequal %}
+<ul list-style-type="none">
+  {% for comment in comments %}
+  <li>
+    <div>
+      <form action="/editcomment" method="post">
+      <input type="hidden" value="{{comment.id}}" name="id" />
+      <input type="hidden" value="{{movie.id}}" name="movie" />
+      <input type="hidden" value="{{user.username}}" name="user" />
+      <textarea id="txtcomment{{comment.id}}" name="text" readonly="true">{{comment.text}}</textarea> {{comment.user}} <br/>
+      {% ifequal comment.user user.username %}
+      <input id="savebtn{{comment.id}}" type="submit" value="Save" hidden="true" />
+      <input id="cancelbtn{{comment.id}}" type="button" value="Cancel" hidden="true" /> <br/>
+      {% endifequal %}
+    </form>
+      {% ifequal comment.user user.username %}
+        <button id="editbtn{{comment.id}}">Edit comment</button>
+        <a href="/deletecomment/{{comment.movie}}&{{comment.id}}">Delete comment</a>
+        <br/>
+        <br/>
+      {% endifequal %}
+      <script>
+        $(document).ready(function(){
+          $("#editbtn{{comment.id}}").click(function(){
+            $("#savebtn{{comment.id}}").show();
+            $("#cancelbtn{{comment.id}}").show();
+            document.getElementById('txtcomment{{comment.id}}').removeAttribute('readonly')
+        });
+        $("#cancelbtn{{comment.id}}").click(function(){
+          document.getElementById('txtcomment{{comment.id}}').value = '{{comment.text}}';
+          $("#savebtn{{comment.id}}").hide();
+          $("#cancelbtn{{comment.id}}").hide();
+          document.getElementById('txtcomment{{comment.id}}').readOnly = true;
+        });
+    });
+    </script>
+    </div>
+  </li>
+      {% endfor %}
+</ul>
 </body>
 </html>
