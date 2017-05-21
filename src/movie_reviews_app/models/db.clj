@@ -48,7 +48,7 @@
 
 (defn get-movies []
   (select movie
-  (order :id :ASC)))
+  (order :released :DESC)))
 
 (defn search-movie [text]
  (select movie

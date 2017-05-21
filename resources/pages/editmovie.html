@@ -2,7 +2,7 @@
 <html>
   <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-   <title>Add movie</title>
+   <title>Edit movie</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" type="text/css" rel="stylesheet">
    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -38,14 +38,14 @@
           <h1>Add new movie:</h1><br>
           {{error}}
           <div class="form-group">
-            <form action="/addmovie" method="post">
+            <form action="/editmovie/{{movie.id}}" method="post">
               <label for="name">Name:</label>
-              <input type="text" name="name" id="name" class="form-control"><br>
+              <input type="text" name="name" id="name" value="{{movie.name}}" class="form-control"><br>
               <label for="released">Date released:</label>
-              <input type="date" name="released" id="released"  class="form-control" ><br>
+              <input type="date" name="released" id="released" value="{{movie.released}}" class="form-control" ><br>
               <label for="description">Description:</label>
-              <textarea name="description" id="description" class="form-control"> </textarea> <br><br>
-              <input type="submit" value="Add movie" class="form-control" >
+              <textarea name="description" id="description" class="form-control">{{movie.description}}</textarea> <br><br>
+              <input type="submit" value="Edit movie" class="form-control" >
             </form>
           </div>
     </div>

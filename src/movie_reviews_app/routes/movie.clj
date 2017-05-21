@@ -34,12 +34,12 @@
 
 (defn addmovie-get [{:keys [params session] request :request}]
   (if (check-authenticated-admin session)
-      (render-file "pages/addmovie.html" {:user (:identity session)})
-      (render-file "pages/login.html" {:error "Please log in to continue this action!!!"})))
+      (render-file "pages/addmovie.html" {:user (:identity session) :authenticated (str (authenticated session))})
+      (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn addmovie-post [{:keys [params session] request :request}]
   (db/add-movie params)
-  (render-file "pages/home.html" {:movies (db/get-movies) :user (:identity session)}))
+  (redirect "/"))
 
 (defn addcomment [{:keys [params session] request :request}]
   (db/add-comment params)
@@ -53,10 +53,26 @@
   (db/delete-comment (:id params))
   (redirect (str "/moviedetail/" (:movie params))))
 
+(defn deletemovie [{:keys [params session] request :request}]
+  (db/delete-movie (:id params))
+  (redirect "/"))
+
+(defn editmovie-get [{:keys [params session] request :request}]
+  (if (check-authenticated-admin session)
+      (render-file "pages/editmovie.html" {:user (:identity session) :authenticated (str (authenticated session)) :movie (first (db/findbyid-movie (:id params)))})
+      (render-file "pages/login.html" {:error "Please log in!!!"})))
+
+(defn editmovie-post [{:keys [params session] request :request}]
+  (db/update-movie params)
+  (redirect "/"))
+
 (defroutes movie-routes
   (GET "/moviedetail/:id" request (showmovie request))
   (GET "/addmovie" request (addmovie-get request))
+  (GET "/editmovie/:id" request (editmovie-get request))
   (POST "/addmovie" request (addmovie-post request))
+  (POST "/editmovie/:id" request (editmovie-post request))
+  (GET "/deletemovie/:id" request (deletemovie request))
   (POST "/addcomment" request (addcomment request))
   (POST "/editcomment" request (editcomment request))
   (GET "/deletecomment/:movie&:id" request (deletecomment request)))

@@ -16,7 +16,7 @@
 
 (defn logout
   [request]
-  (-> (redirect "/login")
+  (-> (redirect "/")
       (assoc :session {})))
 
 (defn register-get []
