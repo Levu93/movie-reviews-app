@@ -9,6 +9,7 @@
   (authenticated? session))
 
 (defn israted [id user]
+  (println (some? (first (db/find-rating-by-user-movie id user))))
   (some? (first (db/find-rating-by-user-movie id user))))
 
 (defn getrating [id user]
@@ -28,7 +29,7 @@
                 :user (:identity session)
                 :average (averagerating (:id params))
                 :rating (first (db/find-rating-by-user-movie (:id params) (:username (:identity session))))
-                :rated (israted (:id params) (:username (:identity session)))
+                :rated (str (israted (:id params) (:username (:identity session))))
                 :comments (db/find-comment-by-movieid (:id params))
                 :authenticated (str (authenticated session))}))
 
@@ -38,24 +39,30 @@
       (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn addmovie-post [{:keys [params session] request :request}]
-  (db/add-movie params)
-  (redirect "/"))
+  (if (check-authenticated-admin session)
+    (do (db/add-movie params) (redirect "/"))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn addcomment [{:keys [params session] request :request}]
-  (db/add-comment params)
-  (redirect (str "/moviedetail/" (:movie params))))
+  (if (authenticated session)
+  (do (db/add-comment params) (redirect (str "/moviedetail/" (:movie params))))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn editcomment [{:keys [params session] request :request}]
-  (db/update-comment params)
-  (redirect (str "/moviedetail/" (:movie params))))
+  (if (authenticated session)
+    (do (db/update-comment params) (redirect (str "/moviedetail/" (:movie params))))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn deletecomment [{:keys [params session] request :request}]
-  (db/delete-comment (:id params))
-  (redirect (str "/moviedetail/" (:movie params))))
+  (if (authenticated session)
+   (do (db/delete-comment (:id params)) (redirect (str "/moviedetail/" (:movie params))))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn deletemovie [{:keys [params session] request :request}]
-  (db/delete-movie (:id params))
-  (redirect "/"))
+  (if (check-authenticated-admin session)
+  (do (db/delete-movie (:id params))
+    (redirect "/"))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn editmovie-get [{:keys [params session] request :request}]
   (if (check-authenticated-admin session)
@@ -63,12 +70,20 @@
       (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defn editmovie-post [{:keys [params session] request :request}]
-  (db/update-movie params)
-  (redirect "/"))
+  (if (check-authenticated-admin session)
+    (do (db/update-movie params)
+     (redirect "/"))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
+
+(defn ratemovie [{:keys [params session] request :request}]
+  (if (authenticated session)
+  (do (db/add-rating params) (redirect (str "/moviedetail/" (:movie params))))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
 
 (defroutes movie-routes
   (GET "/moviedetail/:id" request (showmovie request))
   (GET "/addmovie" request (addmovie-get request))
+  (POST "/ratemovie" request (ratemovie request))
   (GET "/editmovie/:id" request (editmovie-get request))
   (POST "/addmovie" request (addmovie-post request))
   (POST "/editmovie/:id" request (editmovie-post request))

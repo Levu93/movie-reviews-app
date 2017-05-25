@@ -9,7 +9,6 @@
 
 (defn login-post [{:keys [params session] request :request}]
   (let [user (first (db/get-user (:username params) (:password params)))]
-    (println (some? user))
     (if (some? user)
       (assoc (redirect "/"):session (assoc session :identity user))
       (render-file "pages/login.html" {:error "Wrong username or password"}))))
@@ -23,7 +22,9 @@
   (render-file "pages/register.html" {}))
 
 (defn register-post [{:keys [params session] request :request}]
-  (assoc (redirect "/"):session (assoc session :identity "")))
+  (db/add-user params)
+  (let [user (first (db/get-user (:username params) (:password params)))]
+    (assoc (redirect "/"):session (assoc session :identity user))))
 
 (defroutes auth-routes
   (GET "/login" [] (login-get))
