@@ -80,14 +80,26 @@
   (do (db/add-rating params) (redirect (str "/moviedetail/" (:movie params))))
     (render-file "pages/login.html" {:error "Please log in!!!"})))
 
+(defn updaterating [{:keys [params session] request :request}]
+  (if (authenticated session)
+  (do (db/update-rating params) (redirect (str "/moviedetail/" (:movie params))))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
+
+(defn deleterating [{:keys [params session] request :request}]
+  (if (authenticated session)
+   (do (db/delete-rating params) (redirect (str "/moviedetail/" (:movie params))))
+    (render-file "pages/login.html" {:error "Please log in!!!"})))
+
 (defroutes movie-routes
   (GET "/moviedetail/:id" request (showmovie request))
   (GET "/addmovie" request (addmovie-get request))
   (POST "/ratemovie" request (ratemovie request))
+  (POST "/updaterating" request (updaterating request))
   (GET "/editmovie/:id" request (editmovie-get request))
   (POST "/addmovie" request (addmovie-post request))
   (POST "/editmovie/:id" request (editmovie-post request))
   (GET "/deletemovie/:id" request (deletemovie request))
   (POST "/addcomment" request (addcomment request))
   (POST "/editcomment" request (editcomment request))
-  (GET "/deletecomment/:movie&:id" request (deletecomment request)))
+  (GET "/deletecomment/:movie&:id" request (deletecomment request))
+  (POST "/deleterating" request (deleterating request)))

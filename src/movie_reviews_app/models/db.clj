@@ -29,6 +29,10 @@
   (select user
   (where {:username username :password password})))
 
+(defn get-users [role]
+  (select user
+  (where {:role role})))
+
 (defn delete-user [username]
   (delete user
   (where {:username username})))
@@ -86,10 +90,14 @@
   (insert rating
   (values params)))
 
+(defn delete-rating [params]
+  (delete rating
+  (where {:movie (:movie params) :user (:user params)})))
+
 (defn update-rating [params]
   (update rating
           (set-fields params)
-          (where {:id (:id params)})))
+          (where {:movie (:movie params) :user (:user params)})))
 
 (defn find-rating-by-user-movie [movie user]
   (select rating

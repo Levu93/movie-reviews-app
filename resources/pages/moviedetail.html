@@ -18,6 +18,7 @@
       <li class="active"><a href="/">Home</a></li>
       {% ifequal user.role "admin" %}
       <li><a href="/addmovie">Add new movie</a></li>
+      <li><a href="/users">Users</a></li>
       {% endifequal %}
     </ul>
     <ul class="nav navbar-nav navbar-right">
@@ -46,13 +47,26 @@
       {% ifequal authenticated "true" %}
       {% ifequal rated "true" %}
         <h3>Your rating: {{rating.rating}}</h3>
+        <button id="updrating">Update rating</button>
+        <form action="/updaterating" method="post">
+          <input type="number" min="1" max="10" step="1" name="rating" hidden="true" id="numrating"/>
+          <input type="hidden" value="{{movie.id}}" name="movie" />
+          <input type="hidden" value="{{user.username}}" name="user" />
+          <input type="submit" value="Save change" hidden="true" id="btnrating">
+          <input type="button" value="Cancel" hidden="true" id="btncrating">
+        </form>
+        <form action="/deleterating" method="POST">
+                <input type="hidden" value="{{movie.id}}" name="movie" />
+                <input type="hidden" value="{{user.username}}" name="user" />
+                <input type="submit" value="Remove rating"/>
+        </form>
       {% endifequal %}
       {% endifequal %}
       {% ifequal authenticated "true" %}
       {% ifequal rated "false" %}
         <form action="/ratemovie" method="post">
           Rate this move(1-10):
-          <input type="number" min="1" step="1" name="rating"/>
+          <input type="number" min="1" max="10" step="1" name="rating"/>
           <input type="hidden" value="{{movie.id}}" name="movie" />
           <input type="hidden" value="{{user.username}}" name="user" />
           <input type="submit" value="Rate">
@@ -128,15 +142,26 @@
                   $("#savebtn{{comment.id}}").show();
                   $("#cancelbtn{{comment.id}}").show();
                   document.getElementById('txtcomment{{comment.id}}').removeAttribute('readonly')
+                });
+                $("#cancelbtn{{comment.id}}").click(function(){
+                  document.getElementById('txtcomment{{comment.id}}').value = '{{comment.text}}';
+                  $("#savebtn{{comment.id}}").hide();
+                  $("#cancelbtn{{comment.id}}").hide();
+                  document.getElementById('txtcomment{{comment.id}}').readOnly = true;
+                });
+                $("#updrating").click(function(){
+                  $("#btnrating").show();
+                  $("#numrating").show();
+                  $("#btncrating").show();
+                  document.getElementById('numrating').value = {{rating.rating}};
+                });
+                $("#btncrating").click(function(){
+                  $("#btnrating").hide();
+                  $("#numrating").hide();
+                  $("#btncrating").hide();
+                });
               });
-              $("#cancelbtn{{comment.id}}").click(function(){
-                document.getElementById('txtcomment{{comment.id}}').value = '{{comment.text}}';
-                $("#savebtn{{comment.id}}").hide();
-                $("#cancelbtn{{comment.id}}").hide();
-                document.getElementById('txtcomment{{comment.id}}').readOnly = true;
-              });
-          });
-          </script>
+            </script>
           </div>
         {% endfor %}
     </div>

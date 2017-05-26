@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-   <title>Home</title>
+   <title>User review</title>
    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" type="text/css" rel="stylesheet">
    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -34,33 +34,22 @@
   </div>
 </nav>
 
-  <div class="container wrapper">
+    <div class="container wrapper">
             <div class="row text-center">
                 <div>
-                  <h1>Welcome to Movies {{user.name}} {{user.surname}}!</h1>
+                  <h1>Users:</h1>
+                  <br/><br/>
                 </div>
-                <h4>This is a simple movie review portal where you can check movie ratings and see other peoples comment. </h4>
-                <h4>You can also rate and comment movies to share your impression.</h4><br>
             </div>
 
             <div class="col-md-6 col-md-offset-3">
-
-              <h1>Latest movies:</h1><br>
-
-              <div class="list-group">
-                {% for movie in movies %}
-                <a href="/moviedetail/{{movie.id}}" class="list-group-item">
-                  <h4 class="list-group-item-heading">{{movie.name}}</h4>
-                  <p class="list-group-item-text">Date released: {{movie.released}}</p>
-                </a>
-                {% ifequal user.role "admin" %}
-                  <a href="/editmovie/{{movie.id}}">Edit</a>
-                  <a href="/deletemovie/{{movie.id}}">Delete</a><br>
-                {% endifequal %}
-                <br>
+              <ul class="list-group">
+                {% for userl in users %}
+                <li class="list-group-item">{{userl.name}} {{userl.surname}} - {{userl.username}} <span><a href="/deleteuser/{{userl.username}}" style="margin-left: 65%;">Delete</a></span></li>
                 {% endfor %}
+              </ul>
               </div>
-            </div>
+    </div>
   </div>
 </body>
 </html>
